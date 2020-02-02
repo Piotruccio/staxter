@@ -1,6 +1,5 @@
 package com.staxter.player.impl;
 
-import com.staxter.player.api.Messenger;
 import com.staxter.player.api.Player;
 import com.staxter.player.api.PlayerException;
 import org.junit.Test;
@@ -9,9 +8,6 @@ import org.junit.Test;
  * Defines basic test coverage for LocalMessenger - a messenger implementation.
  */
 public class MessengerImplTest extends BaseTest {
-//
-//    @Override
-//    protected Messenger createMessenger() { return new LocalMessenger(); }
 
     @Test
     public void shouldRegisterUnregisteredPlayer() throws PlayerException {

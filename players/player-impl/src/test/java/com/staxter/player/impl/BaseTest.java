@@ -6,8 +6,6 @@ import com.staxter.player.api.Player;
 import com.staxter.player.api.PlayerException;
 import com.staxter.player.api.PlayerID;
 
-import java.util.HashMap;
-import java.util.Map;
 import static org.junit.Assert.*;
 
 /**
@@ -17,8 +15,6 @@ public abstract class BaseTest {
 
     protected Messenger messenger = new MessengerImpl();
     protected Message receivedMessage; // Common for all test players, for simplicity
-
-//    protected Messenger createMessenger() { return new TestMessenger(); }
 
     /**
      * Simple test player implementation class for testing purposes.
@@ -33,45 +29,6 @@ public abstract class BaseTest {
             receivedMessage = message;
         }
     }
-
-//    /**
-//     * Simple test messenger implementation class for testing purposes.
-//     */
-//    private class TestMessenger implements Messenger {
-//        private final Map<PlayerID, Player> players = new HashMap<>();
-//
-//        @Override
-//        public void registerPlayer(Player player) throws PlayerException {
-//            if (players.putIfAbsent(player.getPlayerID(), player) != null)
-//                throw new PlayerException("Player already registered");
-//        }
-//
-//        @Override
-//        public void unregisterPlayer(Player player) throws PlayerException {
-//            if (players.remove(player.getPlayerID()) == null)
-//                throw new PlayerException("Player not registered");
-//        }
-//
-//        @Override
-//        public boolean isPlayerRegistered(PlayerID playerID) {
-//            return players.get(playerID) != null;
-//        }
-//
-//        @Override
-//        public void sendMessage(Message message) throws PlayerException {
-//            Player receiver = players.get(message.getReceiverID());
-//            if (receiver == null)
-//                throw new PlayerException("Player not registered");
-//
-//            receiver.receiveMessage(message);
-//        }
-//
-//        @Override
-//        public void stop() { players.clear(); }
-//
-//        @Override
-//        public boolean isStopped() { return false; }
-//    }
 
     protected Player createTestPlayer(String name) {
         return new TestPlayer(messenger, new PlayerIDImpl(name));
