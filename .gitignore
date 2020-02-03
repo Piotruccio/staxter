@@ -1,5 +1,11 @@
 # Ignore all target directories
-/*/target
+/**/target
 
 # Ignore build directory
 /build
+
+# Ignore IntelliJ IDEA files
+.idea
+*.iws
+*.iml
+*.ipr
