@@ -35,15 +35,27 @@ import static java.lang.Integer.parseInt;
  *
  * Examples: java Main local 20
  *
- *           java Main remote-initiator localhost:1099 localhost:1199 PlayerA PlayerB 5
  *           java Main remote localhost:1199 localhost:1099 PlayerB PlayerA
+ *           java Main remote-initiator localhost:1099 localhost:1199 PlayerA PlayerB 5
  */
 public class Main {
 
     private static final Logger logger = Logger.getLogger(Main.class.getName());
 
+    public static final int MODE_INDEX = 0;
+    public static final int LOCAL_ADDRESS_INDEX = 1;
+    public static final int REMOTE_ADDRESS_INDEX = 2;
+    public static final int LOCAL_NAME_INDEX = 3;
+    public static final int REMOTE_NAME_INDEX = 4;
+
+    public static final int LOCAL_LIMIT_INDEX = 1;
+    public static final int REMOTE_LIMIT_INDEX = 5;
+
+    public static final String MODE_LOCAL = "local";
+    public static final String MODE_REMOTE = "remote";
+    public static final String MODE_REMOTE_INITIATOR = "remote-initiator";
+
     public static final int DEFAULT_MESSAGES_LIMIT = 10;
-    public static final String REMOTE_INITIATOR = "remote-initiator";
 
     /**
      * Runs the players application with given arguments.
@@ -51,29 +63,30 @@ public class Main {
      * @param args the arguments to run with
      */
     public static void main(String[] args) throws PlayerException, RemoteException {
-        if (isLocal(args)) {
+        final String mode = getMode(args);
+
+        if (mode.equalsIgnoreCase(MODE_LOCAL)) {
             logger.log(Level.INFO, () -> "Running locally, args: " + Arrays.toString(args));
 
             runLocally(args);
-        } else {
+        } else if (mode.equalsIgnoreCase(MODE_REMOTE)
+                || mode.equalsIgnoreCase(MODE_REMOTE_INITIATOR)) {
+
             logger.log(Level.INFO, () -> "Running remotely, args: " + Arrays.toString(args));
 
             runRemotely(args);
         }
-    }
-
-    private static boolean isLocal(String[] args) {
-        return args == null || args.length == 0
-                || !(args[0].equals("remote") || args[0].equals(REMOTE_INITIATOR));
+        else throw new PlayerException("Invalid running mode: " + mode);
     }
 
     private static void runLocally(String[] args) throws PlayerException {
-        final Messenger messenger = new MessengerImpl();
-        try {
-            Player initiator = new InitiatingPlayer(messenger,
-                    new PlayerIDImpl("PlayerA"), getMessagesLimit(args, 1));
+        final Messenger messenger = new MessengerImpl(); // With local messenger
 
-            Player replayer = new ReplyingPlayer(messenger, new PlayerIDImpl("PlayerB"));
+        try {
+            final Player initiator = new InitiatingPlayer(messenger,
+                    new PlayerIDImpl("PlayerA"), getMessagesLimit(args, LOCAL_LIMIT_INDEX));
+
+            final Player replayer = new ReplyingPlayer(messenger, new PlayerIDImpl("PlayerB"));
 
             messenger.registerPlayer(initiator);
             messenger.registerPlayer(replayer);
@@ -89,34 +102,28 @@ public class Main {
     }
 
     private static void runRemotely(String[] args) throws PlayerException, RemoteException {
-        final boolean isInitiator = args[0].equals(REMOTE_INITIATOR);
+        final Messenger messenger = new RemoteMessengerImpl(getLocalAddress(args),
+                getRemoteAddress(args)); // With remote messenger
 
-        String localName = getPlayerName(args, 3);
-        String remoteName = getPlayerName(args, 4);
-
-        final Messenger messenger = new RemoteMessengerImpl(getAddress(args, 1),
-                getAddress(args, 2));
         try {
-            if (isInitiator) {
+            if (getMode(args).equals(MODE_REMOTE_INITIATOR)) {
 
-                final Player player = new InitiatingPlayer(messenger,
-                        new PlayerIDImpl(localName), getMessagesLimit(args, 5));
+                final Player player = new InitiatingPlayer(messenger, new PlayerIDImpl(
+                        getLocalPlayerName(args)), getMessagesLimit(args, REMOTE_LIMIT_INDEX));
 
                 messenger.registerPlayer(player);
 
                 final Message message = new MessageImpl(player.getPlayerID(),
-                        new PlayerIDImpl(remoteName), "Hello");
+                        new PlayerIDImpl(getRemotePlayerName(args)), "Hello");
 
                 logger.log(Level.INFO, () -> "Sending initial message: " + message);
                 player.sendMessage(message);
 
             } else {
                 messenger.registerPlayer(
-                        new ReplyingPlayer(messenger, new PlayerIDImpl(localName)));
-            }
+                        new ReplyingPlayer(messenger, new PlayerIDImpl(getLocalPlayerName(args))));
 
-            if (!isInitiator) {
-                logger.log(Level.INFO, () -> "Waiting for messages from: \"" + remoteName + "\"");
+                logger.log(Level.INFO, () -> "Waiting for messages from remote player");
             }
 
             while (true) {
@@ -135,6 +142,29 @@ public class Main {
             messenger.stop(); // Stop and release messenger resources
             throw e;
         }
+    }
+
+    private static String getMode(String[] args) throws PlayerException {
+        if (args == null || args.length < MODE_INDEX + 1) {
+            throw new PlayerException("Missing mode argument, index: " + MODE_INDEX);
+        }
+        return args[MODE_INDEX];
+    }
+
+    private static InetSocketAddress getLocalAddress(String[] args) throws PlayerException {
+        return getAddress(args, LOCAL_ADDRESS_INDEX);
+    }
+
+    private static InetSocketAddress getRemoteAddress(String[] args) throws PlayerException {
+        return getAddress(args, REMOTE_ADDRESS_INDEX);
+    }
+
+    private static String getLocalPlayerName(String[] args) throws PlayerException {
+        return getPlayerName(args, LOCAL_NAME_INDEX);
+    }
+
+    private static String getRemotePlayerName(String[] args) throws PlayerException {
+        return getPlayerName(args, REMOTE_NAME_INDEX);
     }
 
     private static InetSocketAddress getAddress(String[] args, int index) throws PlayerException {
