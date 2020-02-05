@@ -39,7 +39,7 @@ class AuthenticationController {
         return authenticationService.registerUser(registrationDto);
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     @NotNull UserDto loginUser(@RequestBody @Valid LoginDto loginDto) throws NoSuchUserException {
         log.info("Handling loginUser command: {}", loginDto);
 

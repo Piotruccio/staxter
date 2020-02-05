@@ -37,22 +37,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         log.info("Handling registerUser command: {}", registrationDto);
 
-        final User user = userRepository.createUser(userMapper.mapToUser(registrationDto, passwordEncoder));
-        log.info("Created user successfully: {}", user);
+        final User createdUser = userRepository.createUser(userMapper.mapToUser(
+                registrationDto, passwordEncoder));
 
-        return userMapper.mapToUserDto(user);
+        log.info("Created user successfully: {}", createdUser);
+
+        return userMapper.mapToUserDto(createdUser);
     }
 
     @Override
     public @NotNull UserDto loginUser(@NotNull LoginDto loginDto) throws NoSuchUserException {
         log.info("Handling loginUser command: {}", loginDto);
 
-        final User user = userRepository.getUser(loginDto.getUserName());
+        final User existingUser = userRepository.getUser(loginDto.getUserName());
 
-        if (checkUserLogin(loginDto, user)) {
-            log.info("Logged in user successfully: {}", user);
+        if (checkUserLogin(loginDto, existingUser)) {
+            log.info("Logged in user successfully: {}", existingUser);
 
-            return userMapper.mapToUserDto(user); // We're done, user authenticated
+            return userMapper.mapToUserDto(existingUser); // We're done, user authenticated
         }
         throw new InvalidUserLoginException();
     }
