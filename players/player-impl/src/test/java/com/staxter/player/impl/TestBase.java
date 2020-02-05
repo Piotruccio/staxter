@@ -1,37 +1,35 @@
 package com.staxter.player.impl;
 
-import com.staxter.player.api.Message;
 import com.staxter.player.api.Messenger;
 import com.staxter.player.api.Player;
 import com.staxter.player.api.PlayerException;
-import com.staxter.player.api.PlayerID;
 
 import static org.junit.Assert.*;
 
 /**
  * Abstract, simple base test class common for other test classes.
  */
-public abstract class BaseTest {
+public abstract class TestBase {
 
     protected Messenger messenger = new MessengerImpl();
-    protected Message receivedMessage; // Common for all test players, for simplicity
+    protected String receivedMessage; // Common for all test players, for simplicity
 
     /**
      * Simple test player implementation class for testing purposes.
      */
     private class TestPlayer extends AbstractPlayer {
-        private TestPlayer(Messenger messenger, PlayerID playerID) {
+        private TestPlayer(Messenger messenger, String playerID) {
             super(messenger, playerID);
         }
 
         @Override
-        protected void handleReceivedMessage(Message message) {
+        protected void handleReceivedMessage(String message, String senderID) {
             receivedMessage = message;
         }
     }
 
     protected Player createTestPlayer(String name) {
-        return new TestPlayer(messenger, new PlayerIDImpl(name));
+        return new TestPlayer(messenger, name);
     }
 
     protected Player createTestPlayer() {
@@ -61,16 +59,14 @@ public abstract class BaseTest {
     }
 
 
-    protected Message createMessage(Player sender, Player receiver, String message) {
-        return new MessageImpl(sender.getPlayerID(), receiver.getPlayerID(), message);
-    }
+    protected String sendMessage(final String message, Player sender, Player receiver)
+            throws PlayerException {
 
-    protected Message sendMessage(final Message message) throws PlayerException {
-        messenger.sendMessage(message);
+        messenger.sendMessage(message, sender.getPlayerID(), receiver.getPlayerID());
         return message;
     }
 
-    protected void assertReceivedMessage(Message expectedMessage) {
+    protected void assertReceivedMessage(String expectedMessage) {
         assertEquals(expectedMessage, receivedMessage);
     }
 
@@ -80,11 +76,9 @@ public abstract class BaseTest {
         registerPlayer(testedPlayer, testPlayer);
 
         for (int i = 1; i < limit; ++ i) {
-            testPlayer.sendMessage(
-                    createMessage(testPlayer, testedPlayer, "Hello"));
+            testPlayer.sendMessage("Hello", testedPlayer.getPlayerID());
 
-            assertReceivedMessage(
-                    createMessage(testedPlayer, testPlayer, "Hello" + i));
+            assertReceivedMessage("Hello" + i);
         }
     }
 }

@@ -7,7 +7,7 @@ import org.junit.Test;
 /**
  * Defines basic test coverage for LocalMessenger - a messenger implementation.
  */
-public class MessengerImplTest extends BaseTest {
+public class MessengerImplTest extends TestBase {
 
     @Test
     public void shouldRegisterUnregisteredPlayer() throws PlayerException {
@@ -88,8 +88,7 @@ public class MessengerImplTest extends BaseTest {
         registerPlayer(playerA, playerB);
 
         // then
-        assertReceivedMessage(sendMessage(
-                createMessage(playerA, playerB, "Hello")));
+        assertReceivedMessage(sendMessage("Hello", playerA, playerB));
     }
 
     @Test(expected = PlayerException.class)
@@ -100,7 +99,7 @@ public class MessengerImplTest extends BaseTest {
 
         // when
         registerPlayer(playerA);
-        sendMessage(createMessage(playerA, playerB, "Hello")); // then expect PlayerException
+        sendMessage("Hello", playerA, playerB); // then expect PlayerException
     }
 
     @Test
@@ -113,11 +112,9 @@ public class MessengerImplTest extends BaseTest {
         registerPlayer(playerA, playerB);
 
         // then
-        assertReceivedMessage(sendMessage(
-                createMessage(playerA, playerB, "HelloA")));
+        assertReceivedMessage(sendMessage("HelloA", playerA, playerB));
 
-        assertReceivedMessage(sendMessage(
-                createMessage(playerB, playerA, "HelloB")));
+        assertReceivedMessage(sendMessage("HelloB", playerB, playerA));
     }
 
     // common utility test methods

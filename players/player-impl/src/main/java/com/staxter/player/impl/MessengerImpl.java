@@ -1,10 +1,8 @@
 package com.staxter.player.impl;
 
-import com.staxter.player.api.Message;
 import com.staxter.player.api.Messenger;
 import com.staxter.player.api.Player;
 import com.staxter.player.api.PlayerException;
-import com.staxter.player.api.PlayerID;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 public class MessengerImpl implements Messenger {
 
     private final AtomicBoolean running;
-    private final Map<PlayerID, Player> players; // Map with registered players (by ID)
+    private final Map<String, Player> players; // Map with registered players (by ID)
 
     private final Logger logger;
 
@@ -60,28 +58,29 @@ public class MessengerImpl implements Messenger {
     }
 
     @Override
-    public boolean isPlayerRegistered(PlayerID playerID) {
+    public boolean isPlayerRegistered(String playerID) {
         requireNonNull(playerID, "playerID cannot be null");
 
         return players.get(playerID) != null;
     }
 
     @Override
-    public void sendMessage(Message message) throws PlayerException {
-        requireNonNull(message, "message cannot be null");
+    public void sendMessage(String message, String senderID, String receiverID)
+            throws PlayerException {
 
-        final Player receiver = players.get(message.getReceiverID());
+        requireNonNull(message, "message cannot be null");
+        requireNonNull(senderID, "senderID cannot be null");
+        requireNonNull(receiverID, "receiverID cannot be null");
+
+        final Player receiver = players.get(receiverID);
         if (receiver == null) {
-            throw new PlayerException(format("Player \"%s\" not registered",
-                    message.getReceiverID()));
+            throw new PlayerException(format("Player \"%s\" not registered", receiverID));
         }
 
-        logger.log(Level.INFO, () ->
-                format("Sending message: \"%s\" from \"%s\" to \"%s\"",
-                message.getMessageContent(), message.getSenderID(), message.getReceiverID())
-        );
+        logger.log(Level.INFO, () -> format("Sending message: \"%s\" from \"%s\" to \"%s\"",
+                message, senderID, receiverID));
 
-        receiver.receiveMessage(message);
+        receiver.receiveMessage(message, senderID);
     }
 
     @Override

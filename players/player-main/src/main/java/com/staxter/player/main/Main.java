@@ -1,13 +1,10 @@
 package com.staxter.player.main;
 
-import com.staxter.player.api.Message;
 import com.staxter.player.api.Messenger;
 import com.staxter.player.api.Player;
 import com.staxter.player.api.PlayerException;
 import com.staxter.player.impl.InitiatingPlayer;
-import com.staxter.player.impl.MessageImpl;
 import com.staxter.player.impl.MessengerImpl;
-import com.staxter.player.impl.PlayerIDImpl;
 import com.staxter.player.impl.ReplyingPlayer;
 import com.staxter.player.impl.remote.RemoteMessengerImpl;
 
@@ -84,17 +81,17 @@ public class Main {
 
         try {
             final Player initiator = new InitiatingPlayer(messenger,
-                    new PlayerIDImpl("PlayerA"), getMessagesLimit(args, LOCAL_LIMIT_INDEX));
+                    "PlayerA", getMessagesLimit(args, LOCAL_LIMIT_INDEX));
 
-            final Player replayer = new ReplyingPlayer(messenger, new PlayerIDImpl("PlayerB"));
+            final Player replayer = new ReplyingPlayer(messenger, "PlayerB");
 
             messenger.registerPlayer(initiator);
             messenger.registerPlayer(replayer);
 
-            final Message message = new MessageImpl(initiator, replayer, "Hello");
-
+            final String message = "Hello";
             logger.log(Level.INFO, () -> "Sending initial message: " + message);
-            initiator.sendMessage(message);
+
+            initiator.sendMessage(message, replayer.getPlayerID());
 
         } finally {
             messenger.stop(); // Stop and release messenger resources
@@ -108,20 +105,19 @@ public class Main {
         try {
             if (getMode(args).equals(MODE_REMOTE_INITIATOR)) {
 
-                final Player player = new InitiatingPlayer(messenger, new PlayerIDImpl(
-                        getLocalPlayerName(args)), getMessagesLimit(args, REMOTE_LIMIT_INDEX));
+                final Player player = new InitiatingPlayer(messenger,
+                        getLocalPlayerName(args), getMessagesLimit(args, REMOTE_LIMIT_INDEX));
 
                 messenger.registerPlayer(player);
 
-                final Message message = new MessageImpl(player.getPlayerID(),
-                        new PlayerIDImpl(getRemotePlayerName(args)), "Hello");
-
+                final String message = "Hello";
                 logger.log(Level.INFO, () -> "Sending initial message: " + message);
-                player.sendMessage(message);
+
+                player.sendMessage(message, getRemotePlayerName(args));
 
             } else {
                 messenger.registerPlayer(
-                        new ReplyingPlayer(messenger, new PlayerIDImpl(getLocalPlayerName(args))));
+                        new ReplyingPlayer(messenger, getLocalPlayerName(args)));
 
                 logger.log(Level.INFO, () -> "Waiting for messages from remote player");
             }

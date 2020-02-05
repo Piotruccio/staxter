@@ -7,7 +7,7 @@ import org.junit.Test;
 /**
  * Defines basic test coverage for InitiatingPlayer - a player implementation.
  */
-public class InitiatingPlayerTest extends BaseTest {
+public class InitiatingPlayerTest extends TestBase {
 
     @Test
     public void shouldReplyToReceivedMessagesUntilLimitReached() throws PlayerException {
@@ -22,7 +22,6 @@ public class InitiatingPlayerTest extends BaseTest {
     }
 
     private Player createInitiatingPlayer(int messagesLimit) {
-        return new InitiatingPlayer(messenger,
-                new PlayerIDImpl("InitiatingPlayer"), messagesLimit);
+        return new InitiatingPlayer(messenger, "InitiatingPlayer", messagesLimit);
     }
 }

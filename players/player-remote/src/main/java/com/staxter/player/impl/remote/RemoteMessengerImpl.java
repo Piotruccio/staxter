@@ -1,6 +1,5 @@
 package com.staxter.player.impl.remote;
 
-import com.staxter.player.api.Message;
 import com.staxter.player.api.PlayerException;
 import com.staxter.player.impl.MessengerImpl;
 
@@ -50,9 +49,11 @@ public class RemoteMessengerImpl extends MessengerImpl implements RemoteMessenge
     }
 
     @Override
-    public void sendMessage(Message message) throws PlayerException {
+    public void sendMessage(String message, String senderID, String receiverID)
+            throws PlayerException {
+
         try {
-            getRemoteMessenger().sendRemoteMessage(message);
+            getRemoteMessenger().sendRemoteMessage(message, senderID, receiverID);
 
         } catch (RemoteException | NotBoundException e) {
             getLogger().log(Level.SEVERE, () -> "Failed to send message: " + e.getMessage());
@@ -90,9 +91,11 @@ public class RemoteMessengerImpl extends MessengerImpl implements RemoteMessenge
     }
 
     @Override
-    public void sendRemoteMessage(Message message) throws PlayerException {
+    public void sendRemoteMessage(String message, String senderID, String receiverID)
+            throws PlayerException {
+
         getLogger().log(Level.INFO, () -> "Executing send remote message command");
-        super.sendMessage(message);
+        super.sendMessage(message, senderID, receiverID);
     }
 
     @Override

@@ -14,7 +14,7 @@ public interface Messenger {
      * Registers the given player in the messenger so that it can receive
      * messages from other player(s).
      *
-     * @param player the player to register
+     * @param player the player to register, not null
      * @throws PlayerException when the player by given player ID is already
      *      registered
      */
@@ -24,7 +24,7 @@ public interface Messenger {
      * Unregisters the given player from the messenger so that it cannot
      * receive any new messages from other player(s).
      *
-     * @param player the player to unregister
+     * @param player the player to unregister, not null
      * @throws PlayerException when the player by given player ID is already
      *      unregistered
      */
@@ -34,19 +34,21 @@ public interface Messenger {
      * Returns true if player with given player ID is registered in the
      * messenger, false otherwise.
      *
-     * @param playerID the player ID to search
+     * @param playerID the player ID to search, not null
      * @return true if the player is registered, false otherwise
      */
-    boolean isPlayerRegistered(PlayerID playerID);
+    boolean isPlayerRegistered(String playerID);
 
     /**
      * Sends the given message to the given player (receiver).
      *
-     * @param message the message to send
+     * @param message the message to send, not null
+     * @param senderID the player ID of the message sender, not null
+     * @param receiverID the playerID of the message receiver, not null
      * @throws PlayerException when the player given by player ID is not
      *      registered
      */
-    void sendMessage(Message message) throws PlayerException;
+    void sendMessage(String message, String senderID, String receiverID) throws PlayerException;
 
     /**
      * Stops the messenger and releases all resources (unregisters players).

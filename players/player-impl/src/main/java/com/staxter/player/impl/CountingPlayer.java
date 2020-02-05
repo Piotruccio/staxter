@@ -1,8 +1,6 @@
 package com.staxter.player.impl;
 
-import com.staxter.player.api.Message;
 import com.staxter.player.api.Messenger;
-import com.staxter.player.api.PlayerID;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -22,27 +20,29 @@ abstract class CountingPlayer extends AbstractPlayer {
      * @param messenger the associated messenger, cannot be null
      * @param playerID the player ID, cannot be null
      */
-    public CountingPlayer(Messenger messenger, PlayerID playerID) {
+    CountingPlayer(Messenger messenger, String playerID) {
         super(messenger, playerID);
 
         counter = new AtomicInteger();
     }
 
     @Override
-    protected final void handleReceivedMessage(Message message) {
+    protected final void handleReceivedMessage(String message, String senderID) {
         final int count = counter.incrementAndGet();
 
         getLogger().log(Level.INFO, () -> "Incremented messages counter to: " + count);
 
-        handleReceivedMessage(message, count);
+        handleReceivedMessage(message, senderID, count);
     }
 
     /**
      * Handles the received message in a way specific to concrete player
      * instance. To be overridden in subclasses.
      *
-     * @param message the received message to handle
+     * @param message the received message to handle, not null
+     * @param senderID the player ID of the message sender, not null
      * @param counter the current value of messages counter
      */
-    protected abstract void handleReceivedMessage(Message message, int counter);
+    protected abstract void handleReceivedMessage(
+            String message, String senderID, int counter);
 }

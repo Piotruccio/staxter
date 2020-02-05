@@ -1,7 +1,6 @@
 package com.staxter.player.impl;
 
 import com.staxter.player.api.Messenger;
-import com.staxter.player.api.PlayerID;
 
 /**
  * Represents a player implementation class that provides automatic replies to
@@ -18,7 +17,7 @@ public class InitiatingPlayer extends ReplyingPlayer {
      * @param messagesLimit the messages limit
      */
     public InitiatingPlayer(
-            Messenger messenger, PlayerID playerID, int messagesLimit) {
+            Messenger messenger, String playerID, int messagesLimit) {
 
         super(messenger, playerID, counter -> counter >= messagesLimit);
     }

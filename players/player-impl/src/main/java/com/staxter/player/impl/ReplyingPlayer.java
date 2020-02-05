@@ -1,9 +1,7 @@
 package com.staxter.player.impl;
 
-import com.staxter.player.api.Message;
 import com.staxter.player.api.Messenger;
 import com.staxter.player.api.PlayerException;
-import com.staxter.player.api.PlayerID;
 
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -26,7 +24,7 @@ public class ReplyingPlayer extends CountingPlayer {
      * @param messenger the associated messenger, cannot be null
      * @param playerID  the player ID, cannot be null
      */
-    public ReplyingPlayer(Messenger messenger, PlayerID playerID) {
+    public ReplyingPlayer(Messenger messenger, String playerID) {
         this(messenger, playerID, NO_STOP_FUNCTION);
     }
 
@@ -40,7 +38,7 @@ public class ReplyingPlayer extends CountingPlayer {
      *      on received messages counter, cannot be null (endless replying player)
      */
     public ReplyingPlayer(
-            Messenger messenger, PlayerID playerID, Function<Integer, Boolean> stopFunction) {
+            Messenger messenger, String playerID, Function<Integer, Boolean> stopFunction) {
 
         super(messenger, playerID);
 
@@ -49,19 +47,19 @@ public class ReplyingPlayer extends CountingPlayer {
     }
 
     @Override
-    protected final void handleReceivedMessage(Message message, int counter) {
+    protected final void handleReceivedMessage(String message, String senderID, int counter) {
         requireNonNull(message, "message cannot be null");
+        requireNonNull(senderID, "senderID cannot be null");
 
         if (checkStopCondition(counter)) {
             getLogger().log(Level.INFO, () -> format("Stop condition met, stopping..."));
 
-            getMessenger().stop(); // Stopping messenger, could use callback for flexibility
+            getMessenger().stop(); // Stop messenger, could be callback for flexibility...
             return;
         }
 
         try {
-            sendMessage(new MessageImpl(getPlayerID(), message.getSenderID(),
-                    createReplyContent(message, counter)));
+            sendMessage(createReplyContent(message, counter), senderID);
 
         } catch (PlayerException e) {
             getLogger().log(Level.SEVERE, () -> format(
@@ -79,8 +77,8 @@ public class ReplyingPlayer extends CountingPlayer {
      * @param counter the current messages counter
      * @return reply message content, cannot be null
      */
-    protected String createReplyContent(Message message, int counter) {
-        return message.getMessageContent() + counter;
+    protected String createReplyContent(String message, int counter) {
+        return message + counter;
     }
 
     private boolean checkStopCondition(int counter) { return stopFunction.apply(counter); }

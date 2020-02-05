@@ -2,7 +2,6 @@ package com.staxter.player.impl;
 
 import com.staxter.player.api.Player;
 import com.staxter.player.api.PlayerException;
-import com.staxter.player.api.PlayerID;
 import org.junit.Test;
 
 import java.util.function.Function;
@@ -10,7 +9,9 @@ import java.util.function.Function;
 /**
  * Defines basic test coverage for ReplyingPlayer - a player implementation.
  */
-public class ReplyingPlayerTest extends BaseTest {
+public class ReplyingPlayerTest extends TestBase {
+
+    private static final String REPLYING_PLAYER_ID = "ReplyingPlayer";
 
     @Test
     public void shouldReplyToReceivedMessage() throws PlayerException {
@@ -21,12 +22,10 @@ public class ReplyingPlayerTest extends BaseTest {
         // when
         registerPlayer(replyingPlayer, testPlayer);
 
-        testPlayer.sendMessage(
-                createMessage(testPlayer, replyingPlayer, "Hello"));
+        testPlayer.sendMessage("Hello", replyingPlayer.getPlayerID());
 
         // then
-        assertReceivedMessage(
-                createMessage(replyingPlayer, testPlayer, "Hello1"));
+        assertReceivedMessage("Hello1");
     }
 
     @Test
@@ -39,12 +38,10 @@ public class ReplyingPlayerTest extends BaseTest {
         registerPlayer(replyingPlayer, testPlayer);
 
         for (int i = 1; i <= 1000; ++ i) {
-            testPlayer.sendMessage(
-                    createMessage(testPlayer, replyingPlayer, "Hello"));
+            testPlayer.sendMessage("Hello", replyingPlayer.getPlayerID());
 
             // then
-            assertReceivedMessage(
-                    createMessage(replyingPlayer, testPlayer, "Hello" + i));
+            assertReceivedMessage("Hello" + i);
         }
     }
 
@@ -60,15 +57,11 @@ public class ReplyingPlayerTest extends BaseTest {
         assertReceivedMessagesUntilLimitReached(testPlayer, replyingPlayer, limit);
     }
 
-    private PlayerID createReplyingPlayerID() {
-        return new PlayerIDImpl("ReplyingPlayer");
-    }
-
     private Player createReplyingPlayer() {
-        return new ReplyingPlayer(messenger, createReplyingPlayerID());
+        return new ReplyingPlayer(messenger, REPLYING_PLAYER_ID);
     }
 
     private Player createReplyingPlayer(Function<Integer, Boolean> stopFunction) {
-        return new ReplyingPlayer(messenger, createReplyingPlayerID(), stopFunction);
+        return new ReplyingPlayer(messenger, REPLYING_PLAYER_ID, stopFunction);
     }
 }
