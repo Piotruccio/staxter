@@ -1,10 +1,12 @@
-package com.staxter.user.login.impl;
+package com.staxter.user.authentication.impl;
 
+import com.staxter.user.authentication.AuthenticationService;
 import com.staxter.userrepository.LoginDto;
-import com.staxter.userrepository.User;
-import com.staxter.userrepository.UserDto;
-import com.staxter.user.login.LoginService;
 import com.staxter.userrepository.NoSuchUserException;
+import com.staxter.userrepository.RegistrationDto;
+import com.staxter.userrepository.User;
+import com.staxter.userrepository.UserAlreadyExistsException;
+import com.staxter.userrepository.UserDto;
 import com.staxter.userrepository.UserMapper;
 import com.staxter.userrepository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -15,18 +17,30 @@ import javax.validation.constraints.NotNull;
 
 @Service
 @Slf4j
-class LoginServiceImpl implements LoginService {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
-    LoginServiceImpl(@NotNull UserRepository userRepository,
-                     @NotNull PasswordEncoder passwordEncoder, @NotNull UserMapper userMapper) {
+    AuthenticationServiceImpl(@NotNull UserRepository userRepository,
+                              @NotNull PasswordEncoder passwordEncoder, @NotNull UserMapper userMapper) {
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
+    }
+
+    @Override
+    public @NotNull UserDto registerUser(@NotNull RegistrationDto registrationDto)
+            throws UserAlreadyExistsException {
+
+        log.info("Handling registerUser command: {}", registrationDto);
+
+        final User user = userRepository.createUser(userMapper.mapToUser(registrationDto, passwordEncoder));
+        log.info("Created user successfully: {}", user);
+
+        return userMapper.mapToUserDto(user);
     }
 
     @Override

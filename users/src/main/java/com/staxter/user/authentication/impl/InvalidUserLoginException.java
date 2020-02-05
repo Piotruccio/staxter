@@ -1,4 +1,4 @@
-package com.staxter.user.login.impl;
+package com.staxter.user.authentication.impl;
 
 import com.staxter.userrepository.NoSuchUserException;
 import lombok.Data;

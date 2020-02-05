@@ -38,7 +38,6 @@ class UserRepositoryImpl implements UserRepository {
 
     @Override
     public @NotNull User getUser(@Valid @NotNull String userName) throws NoSuchUserException {
-
         final User existingUser = users.get(userName);
         if (existingUser == null) {
             log.info("No such user exists error; userName: " + userName);
