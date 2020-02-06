@@ -18,7 +18,7 @@ public interface AuthenticationService {
      * Register user with given user registration data.
      *
      * @param registrationDto the registration dto
-     * @return
+     * @return the registered user dto
      * @throws UserAlreadyExistsException when user with given user name is
      *      already registered
      */
@@ -28,7 +28,7 @@ public interface AuthenticationService {
      * Login user with given login data.
      *
      * @param loginDto the login dto
-     * @return
+     * @return the logged in user dto
      * @throws NoSuchUserException when no such user is registered
      */
     @NotNull UserDto loginUser(@NotNull LoginDto loginDto) throws NoSuchUserException;
