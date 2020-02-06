@@ -7,6 +7,9 @@ import com.staxter.userrepository.UserDto;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * A common test implementation class to be extended by concrete test classes.
+ */
 public class TestBase {
 
     // Data represent single test user, common for all test cases

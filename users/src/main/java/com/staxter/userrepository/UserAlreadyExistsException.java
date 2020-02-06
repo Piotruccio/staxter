@@ -1,14 +1,20 @@
 package com.staxter.userrepository;
 
+import com.staxter.user.UserError;
 import lombok.Data;
 
+/**
+ * Represents a type of user exception related to user already exists error
+ * condition.
+ */
 @Data
 public class UserAlreadyExistsException extends UserException {
 
-    private static final String ERROR_CODE = "USER_ALREADY_EXISTS";
-    private static final String ERROR_DESCRIPTION = "A user with the given username already exists";
-
+    /**
+     * Default constructor that creates a new instance of user already exists
+     * exception.
+     */
     public UserAlreadyExistsException() {
-        super(ERROR_CODE, ERROR_DESCRIPTION);
+        super(UserError.USER_ALREADY_EXISTS);
     }
 }

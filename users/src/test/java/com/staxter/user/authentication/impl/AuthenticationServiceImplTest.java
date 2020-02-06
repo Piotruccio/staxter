@@ -18,6 +18,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+/**
+ * Basic unit test coverage for the authentication service.
+ */
 public class AuthenticationServiceImplTest extends TestBase {
 
     private final UserRepository userRepository = mock(UserRepository.class);

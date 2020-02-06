@@ -1,6 +1,6 @@
 package com.staxter.user.authentication.web;
 
-import com.staxter.user.UserErrorResponse;
+import com.staxter.user.UserError;
 import com.staxter.user.authentication.AuthenticationService;
 import com.staxter.userrepository.LoginDto;
 import com.staxter.userrepository.NoSuchUserException;
@@ -47,16 +47,16 @@ class AuthenticationController {
     }
 
     @ExceptionHandler({ UserAlreadyExistsException.class })
-    @NotNull ResponseEntity<UserErrorResponse> handleUserAlreadyExistsException(
+    @NotNull ResponseEntity<UserError> handleUserAlreadyExistsException(
             @NotNull UserAlreadyExistsException e) {
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.toUserErrorResponse());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getUserError());
     }
 
     @ExceptionHandler({ NoSuchUserException.class })
-    @NotNull ResponseEntity<UserErrorResponse> handleNoSuchUserException(
+    @NotNull ResponseEntity<UserError> handleNoSuchUserException(
             @NotNull NoSuchUserException e) {
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.toUserErrorResponse());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getUserError());
     }
 }

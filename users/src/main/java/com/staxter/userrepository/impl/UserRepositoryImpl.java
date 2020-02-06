@@ -5,7 +5,7 @@ import com.staxter.userrepository.User;
 import com.staxter.userrepository.UserAlreadyExistsException;
 import com.staxter.userrepository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * A simple user repository implementation that holds all user registrations in
  * memory, within a map by username as ID.
  */
-@Service
+@Repository
 @Slf4j
 class UserRepositoryImpl implements UserRepository {
 

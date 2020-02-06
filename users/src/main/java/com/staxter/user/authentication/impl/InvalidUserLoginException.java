@@ -1,15 +1,21 @@
 package com.staxter.user.authentication.impl;
 
 import com.staxter.userrepository.NoSuchUserException;
+import com.staxter.user.UserError;
 import lombok.Data;
 
+/**
+ * Represents a type of user exception related to invalid user login error
+ * condition.
+ */
 @Data
 public class InvalidUserLoginException extends NoSuchUserException {
 
-    private static final String ERROR_CODE = "INVALID_USER_LOGIN";
-    private static final String ERROR_DESCRIPTION = "Invalid username/password";
-
+    /**
+     * Default constructor that creates a new instance of invalid user login
+     * exception.
+     */
     public InvalidUserLoginException() {
-        super(ERROR_CODE, ERROR_DESCRIPTION);
+        super(UserError.INVALID_USER_LOGIN);
     }
 }

@@ -9,6 +9,9 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Basic unit test coverage for the user repository implementation class.
+ */
 public class UserRepositoryImplTest extends TestBase {
 
     private final UserRepository userRepository = new UserRepositoryImpl();
