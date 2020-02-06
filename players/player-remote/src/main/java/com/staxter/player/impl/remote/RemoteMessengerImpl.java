@@ -25,7 +25,7 @@ public class RemoteMessengerImpl extends MessengerImpl implements RemoteMessenge
 
     private final InetSocketAddress remoteAddress;
     private final Registry registry;
-    private final AtomicReference<RemoteMessenger> messenger;
+    private final AtomicReference<RemoteMessenger> remoteMessenger;
 
     /**
      * Constructs a new remote messenger instance.
@@ -43,7 +43,7 @@ public class RemoteMessengerImpl extends MessengerImpl implements RemoteMessenge
         registry = createRegistry(localAddress.getPort());
         registry.rebind(REMOTE_MESSENGER_ID, exportObject(this, 0));
 
-        messenger = new AtomicReference<>();
+        remoteMessenger = new AtomicReference<>(); // To be set on first send message attempt
 
         getLogger().log(Level.INFO, () -> "Registered remote messenger in RMI registry");
     }
@@ -106,9 +106,11 @@ public class RemoteMessengerImpl extends MessengerImpl implements RemoteMessenge
     }
 
     private RemoteMessenger getRemoteMessenger() throws RemoteException, NotBoundException {
-        if (messenger.get() != null) return messenger.get();
-
-        return (RemoteMessenger) getRegistry(remoteAddress.getHostString(),
-                remoteAddress.getPort()).lookup(REMOTE_MESSENGER_ID);
+        if (remoteMessenger.get() == null) {
+            remoteMessenger.compareAndSet(null, (RemoteMessenger) getRegistry(
+                    remoteAddress.getHostString(),
+                    remoteAddress.getPort()).lookup(REMOTE_MESSENGER_ID));
+        }
+        return remoteMessenger.get();
     }
 }
